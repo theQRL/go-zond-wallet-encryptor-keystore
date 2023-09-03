@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/stretchr/testify v1.8.4
-	github.com/theQRL/go-qrllib v0.0.0-20230406170304-b7eb19c367e1
 	github.com/theQRL/go-zond-wallet-types v0.0.0-20230825000054-1d9fefb6afe7
 	golang.org/x/crypto v0.12.0
 )
