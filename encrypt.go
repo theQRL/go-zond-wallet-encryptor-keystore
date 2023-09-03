@@ -8,12 +8,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-
-	"github.com/theQRL/go-qrllib/common"
 )
 
 // Encrypt encrypts data.
-func (e *Encryptor) Encrypt(seed [common.SeedSize]byte, passphrase string) (map[string]interface{}, error) {
+func (e *Encryptor) Encrypt(data []byte, passphrase string) (map[string]interface{}, error) {
 	// Random salt
 	salt := make([]byte, 32)
 	if _, err := rand.Read(salt); err != nil {
@@ -43,10 +41,9 @@ func (e *Encryptor) Encrypt(seed [common.SeedSize]byte, passphrase string) (map[
 		return nil, err
 	}
 
-	cipherText := make([]byte, aes.BlockSize+len(seed))
-	copy(cipherText[:aes.BlockSize], aesIV)
+	cipherText := make([]byte, len(data))
 	stream := cipher.NewCTR(block, aesIV)
-	stream.XORKeyStream(cipherText[aes.BlockSize:], seed[:])
+	stream.XORKeyStream(cipherText, data)
 
 	h := sha256.New()
 	if _, err := h.Write(decryptionKey[16:32]); err != nil {
