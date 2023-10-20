@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/theQRL/go-zond-wallet-encryptor-keystore/misc"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -51,7 +53,7 @@ func (e *Encryptor) Decrypt(data map[string]interface{}, passphrase string) ([]b
 
 	var decryptionKey []byte
 	kdfParams := ks.KDF.Params
-	salt, err := hex.DecodeString(kdfParams.Salt)
+	salt, err := misc.DecodeHex(kdfParams.Salt)
 	if err != nil {
 		return nil, fmt.Errorf("KDF salt is invalid | reason %v", err)
 	}
@@ -68,7 +70,7 @@ func (e *Encryptor) Decrypt(data map[string]interface{}, passphrase string) ([]b
 	if len(decryptionKey) < 32 {
 		return nil, fmt.Errorf("decryption key size is less than 32 bytes | current size %d", len(decryptionKey))
 	}
-	cipherMsg, err := hex.DecodeString(ks.Cipher.Message)
+	cipherMsg, err := misc.DecodeHex(ks.Cipher.Message)
 	if err != nil {
 		return nil, errors.New("invalid cipher message")
 	}
@@ -80,7 +82,7 @@ func (e *Encryptor) Decrypt(data map[string]interface{}, passphrase string) ([]b
 		return nil, err
 	}
 	expectedChecksum := h.Sum(nil)
-	foundChecksum, err := hex.DecodeString(ks.Checksum.Message)
+	foundChecksum, err := misc.DecodeHex(ks.Checksum.Message)
 	if err != nil {
 		return nil, fmt.Errorf("invalid checksum message | reason %v", err.Error())
 	}
@@ -96,7 +98,7 @@ func (e *Encryptor) Decrypt(data map[string]interface{}, passphrase string) ([]b
 		if err != nil {
 			return nil, err
 		}
-		iv, err := hex.DecodeString(ks.Cipher.Params.IV)
+		iv, err := misc.DecodeHex(ks.Cipher.Params.IV)
 		if err != nil {
 			return nil, fmt.Errorf("invalid aes IV | reason %v", err.Error())
 		}
